@@ -6,7 +6,15 @@ The training recipe, click methods and mask merging are adapted from Kevin Hu's 
 
 ## Getting started
 
-Training and scoring need an NVIDIA GPU, so they run on PACE-ICE. [docs/cluster.md](docs/cluster.md) has every command; in short:
+Training and scoring need an NVIDIA GPU.
+
+### Google Colab (quickest laptop path)
+
+Open [`notebooks/00_colab.ipynb`](notebooks/00_colab.ipynb) in Colab with a **GPU** runtime and run all cells. That clones the repo, installs Point-SAM, downloads Wytham data, builds crops, and runs the smoke train (`smoke_colab.yaml`). Details: [docs/colab.md](docs/colab.md). Push these Colab files to GitHub first (or upload the repo to Drive) so Colab can find `scripts/setup_colab.py`.
+
+### PACE-ICE (full cluster path)
+
+[docs/cluster.md](docs/cluster.md) has every command; in short:
 
 1. **Clone** this repo into your ICE scratch folder.
 2. **Install** the environment with `sbatch scripts/slurm/install_env.sbatch`. It ends in `INSTALL_DONE`.
@@ -37,16 +45,17 @@ src/treeseg/
   engine/    trainer.py, clicks.py, segment.py, scoring.py, benchmark.py
   utils/     curves.py, view3d.py
 configs/     data and experiment settings
-notebooks/   01_auto_prompt (no GPU), 02_train, 03_benchmark, 04_inference_steps
-scripts/     prepare_data.py, inspect_ground.py, slurm/
+notebooks/   00_colab (Colab one-shot), 01_auto_prompt (no GPU), 02_train, 03_benchmark, 04_inference_steps
+scripts/     prepare_data.py, setup_colab.py, inspect_ground.py, slurm/
 tests/       run with: python -m pytest tests
-docs/        cluster.md (PACE-ICE setup)
+docs/        cluster.md (PACE-ICE), colab.md (Google Colab)
 ```
 
 ## Notebooks
 
 | Notebook | Question it answers | GPU |
 |---|---|---|
+| `00_colab` | Colab: install, data, and smoke train in one place | Yes (Colab) |
 | `01_auto_prompt` | Is the ground removed, and do automatic clicks land on trees? | No |
 | `02_train` | Does training work? Curves, one click before and after, one whole val tile | Yes |
 | `03_benchmark` | The numbers: crop scores with label clicks, then whole-tile scores | Yes |
