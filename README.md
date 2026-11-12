@@ -45,10 +45,10 @@ src/treeseg/
   engine/    trainer.py, clicks.py, segment.py, scoring.py, benchmark.py
   utils/     curves.py, view3d.py
 configs/     data and experiment settings
-notebooks/   00_colab (Colab one-shot), 01_auto_prompt (no GPU), 02_train, 03_benchmark, 04_inference_steps
-scripts/     prepare_data.py, setup_colab.py, inspect_ground.py, slurm/
+notebooks/   00_colab, 01–04 classic, experiments/01–08 (one notebook per follow-up run)
+scripts/     prepare_data.py, setup_colab.py, download_cherlet_site.py, combine_crop_sets.py, ingest_cedar_key.py, slurm/
 tests/       run with: python -m pytest tests
-docs/        cluster.md (PACE-ICE), colab.md (Google Colab)
+docs/        cluster.md, colab.md, experiments.md (follow-up study)
 ```
 
 ## Notebooks
@@ -60,6 +60,7 @@ docs/        cluster.md (PACE-ICE), colab.md (Google Colab)
 | `02_train` | Does training work? Curves, one click before and after, one whole val tile | Yes |
 | `03_benchmark` | The numbers: crop scores with label clicks, then whole-tile scores | Yes |
 | `04_inference_steps` | The pictures: one tile through every stage (ground, clicks, masks, merging, scoring) | Live on ICE, or replays saved masks on a Mac |
+| `experiments/01`–`08` | Follow-up study: one factor each, shared val-tile compare, optional Colab shutdown | See [docs/experiments.md](docs/experiments.md) |
 
 `03_benchmark` and `04_inference_steps` call the same code in `src/treeseg/engine/`, so the pictures and the numbers agree.
 
@@ -132,10 +133,11 @@ All in `configs/experiment/<run>.yaml`, except crop size, which lives in `config
 
 ## Next
 
-- Run `diagnose_val.yaml` to see whether clicks, masks or merging lose the trees, and compare with TreeX alone on the same tiles.
-- Hyperparameter sweep on the val strip, scored with tile F1: the three configs above, then crop size and points per crop.
+Follow-up study notebooks live in `notebooks/experiments/` (DoRA, HP sweeps, Cherlet multi-site, Florida Cedar Key mangroves, negative-click inference). Details: [docs/experiments.md](docs/experiments.md).
+
+- Run `diagnose_val.yaml` / experiment `compare_val.yaml` for tile F1, not only crop `val_iou_pick`.
 - Fair click comparison: the same number of clicks per tree for `stems` and `treex`.
-- Run the trained model on island scans, and label island trees in `instance-annotator`.
+- Label Blueflux Everglades TLS (currently unlabeled) or island scans in `instance-annotator` when ready.
 
 ## Versions
 

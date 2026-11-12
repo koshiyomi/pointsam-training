@@ -19,8 +19,12 @@ import shutil
 import subprocess
 import sys
 import urllib.request
-import zipfile
 from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from archive_util import ensure_min_size, extract_zip  # noqa: E402
 
 POINT_SAM_COMMIT = "25f4fd9675479f3c951e830771595855ff7ed466"
 WEIGHTS_URL = "https://huggingface.co/yuchen0187/Point-SAM/resolve/main/model.safetensors"
@@ -219,13 +223,18 @@ def download_wytham(source_dir: Path) -> None:
         return
 
     zip_path = source_dir / "wytham.zip"
+    # Zenodo wytham.zip is ~3.2 GB; smaller usually means a truncated Drive/browser download.
+    min_zip_bytes = 2_500_000_000
+    if zip_path.is_file() and zip_path.stat().st_size < min_zip_bytes:
+        print(f"Removing truncated zip ({zip_path.stat().st_size} bytes)", flush=True)
+        zip_path.unlink()
     if not zip_path.is_file():
         print(f"Downloading Wytham zip (~3.2 GB) → {zip_path}", flush=True)
         urllib.request.urlretrieve(ZENODO_URL, zip_path)
+    ensure_min_size(zip_path, min_zip_bytes, "wytham.zip")
 
-    print(f"Unpacking {zip_path}", flush=True)
-    with zipfile.ZipFile(zip_path) as zf:
-        zf.extractall(source_dir)
+    # Prefer system unzip: Python zipfile hits NotImplementedError on some Zenodo methods.
+    extract_zip(zip_path, source_dir)
 
     for name in needed:
         if (source_dir / name).is_file():

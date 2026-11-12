@@ -1,0 +1,21 @@
+# Frozen shared val-tile benchmark for notebooks/experiments/*.
+# Checkpoints are filled by treeseg.engine.experiment_run.build_compare_cfg.
+# Val tiles only — the Wytham test strip stays unused for experiment selection.
+tile_dir: data/wytham_isprs/tiles
+tiles: [isprs_val_t00_00, isprs_val_t00_01, isprs_val_t00_02]
+out_dir: results/compare_val
+
+checkpoints: {}
+
+csf: {resolution: 0.5, threshold: 0.5, iterations: 500, rigidness: 1}
+
+click_methods: [perfect, treex, stems]
+baselines: [treex_full]
+save_masks: false
+min_tree_points: 200
+iou_threshold: 0.5
+crop_size: 12.0
+crop_stride: 4.0
+crop_points: 10000
+group_number: 512
+group_size: 64

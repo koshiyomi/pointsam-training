@@ -3,7 +3,9 @@
 # Settings are Kevin Hu's v3 recipe, with three differences: the training data, no colour, and ground
 # removed by the cloth filter when crops are built, instead of by labels during training.
 run: isprs_lora_batch4
+adapter: lora
 data_dir: data/wytham_isprs/crops
+
 checkpoint: thirdparty/checkpoints/point_sam/model.safetensors
 out_dir: results/isprs_lora_batch4
 
@@ -15,7 +17,7 @@ val_max_crops: 56    # the whole val strip
 
 batch_size: 4
 grad_accum: 1
-num_workers: 4
+num_workers: 2
 max_steps: 1500
 log_every: 25
 val_every: 100

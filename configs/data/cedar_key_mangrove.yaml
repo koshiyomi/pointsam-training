@@ -1,0 +1,10 @@
+# Cedar Key, Florida — Avicennia germinans individual-tree TLS (Figshare 31324393).
+# Trees are pre-segmented LAS files; scripts/ingest_cedar_key.py writes ForestCrops npz files.
+source_dir: data/raw/cedar_key_mangrove
+out_dir: data/cedar_key_mangrove
+# ingest script uses these; no PLY strips
+voxel_m: 0.05
+min_tree_points: 512
+max_crop_points: 100000
+val_fraction: 0.2
+seed: 0

@@ -42,7 +42,7 @@ import os
 os.environ["TREESEG_CONFIG"] = "configs/experiment/smoke_colab.yaml"  # then isprs_lora_colab.yaml
 ```
 
-Open or `%run` `notebooks/02_train.ipynb`. Benchmark and inference notebooks work the same way once crops (and a checkpoint) exist.
+Open or `%run` `notebooks/02_train.ipynb`. For the follow-up study (one notebook per experiment, shared val-tile compare, optional `runtime.unassign()`), use `notebooks/experiments/` — see [experiments.md](experiments.md).
 
 ## Tips
 

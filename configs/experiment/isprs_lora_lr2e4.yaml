@@ -3,6 +3,7 @@
 # Settings are Kevin Hu's v3 recipe, with three differences: the training data, no colour, and ground
 # removed by the cloth filter when crops are built, instead of by labels during training.
 run: isprs_lora_lr2e4
+adapter: lora
 data_dir: data/wytham_isprs/crops
 checkpoint: thirdparty/checkpoints/point_sam/model.safetensors
 out_dir: results/isprs_lora_lr2e4

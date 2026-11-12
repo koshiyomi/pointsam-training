@@ -10,7 +10,7 @@ sys.path.insert(0, "src")
 
 from treeseg.data.dataset import ForestCrops, choose_masks, stem_clicks, subsample, to_unit_sphere
 from treeseg.engine.trainer import first_clicks, lr_factor
-from treeseg.models.lora import LinearWithLoRA, add_lora, merged_lora
+from treeseg.models.lora import LinearWithDoRA, LinearWithLoRA, add_dora, add_lora, merged_lora
 from treeseg.utils.curves import make_all, per_epoch
 
 
@@ -40,6 +40,25 @@ def test_merged_layer_gives_the_same_output():
     nn.init.normal_(wrapped.lora_b)
     x = torch.randn(3, 16)
     assert torch.allclose(wrapped(x), wrapped.merged()(x), atol=1e-5)
+
+
+def test_dora_merged_matches_forward():
+    wrapped = LinearWithDoRA(nn.Linear(16, 16), rank=4, alpha=8)
+    nn.init.normal_(wrapped.lora_b)
+    x = torch.randn(3, 16)
+    assert torch.allclose(wrapped(x), wrapped.merged()(x), atol=1e-5)
+
+
+def test_add_dora_wraps_targets():
+    class Block(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.q_proj, self.other = nn.Linear(4, 4), nn.Linear(4, 4)
+
+    model = nn.Sequential(Block(), Block())
+    assert add_dora(model, targets=("q_proj",), rank=2) == 2
+    assert isinstance(model[0].q_proj, LinearWithDoRA)
+    assert isinstance(model[0].other, nn.Linear)
 
 
 def test_saved_keys_match_stock_and_adapters_return():

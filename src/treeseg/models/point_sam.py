@@ -8,7 +8,7 @@ GPU, because its torkit3d dependency has no CPU version.
 import os
 import sys
 
-from .lora import add_lora, merged_lora
+from .lora import add_dora, add_lora, merged_lora
 
 
 def add_point_sam_to_path(root: str = "thirdparty/Point-SAM") -> str:
@@ -45,15 +45,30 @@ def build_point_sam(checkpoint: str, group_number: int = 512, group_size: int = 
 
 def prepare_for_lora(model, rank: int = 8, alpha: float = 16.0, targets=("q_proj", "v_proj")) -> None:
     """Freeze everything, then train LoRA adapters, patch embedding and the prompt and mask decoders."""
+    prepare_for_adapter(model, method="lora", rank=rank, alpha=alpha, targets=targets)
+
+
+def prepare_for_adapter(
+    model,
+    method: str = "lora",
+    rank: int = 8,
+    alpha: float = 16.0,
+    targets=("q_proj", "v_proj"),
+) -> None:
+    """Freeze the backbone, attach LoRA or DoRA, unfreeze patch embed and prompt/mask heads."""
+    method = method.lower()
+    if method not in ("lora", "dora"):
+        raise ValueError(f"adapter must be 'lora' or 'dora', got {method!r}")
     for p in model.parameters():
         p.requires_grad = False
-    wrapped = add_lora(model.pc_encoder.transformer, targets, rank, alpha)
+    add_fn = add_dora if method == "dora" else add_lora
+    wrapped = add_fn(model.pc_encoder.transformer, targets, rank, alpha)
     for part in (model.pc_encoder.patch_embed, model.point_encoder, model.mask_encoder, model.mask_decoder):
         for p in part.parameters():
             p.requires_grad = True
     trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     total = sum(p.numel() for p in model.parameters())
-    print(f"LoRA adapters: {wrapped}, trainable {trainable / 1e6:.1f}M of {total / 1e6:.1f}M parameters")
+    print(f"{method.upper()} adapters: {wrapped}, trainable {trainable / 1e6:.1f}M of {total / 1e6:.1f}M parameters")
 
 
 def save_checkpoint(model, path: str) -> None:

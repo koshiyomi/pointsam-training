@@ -1,0 +1,18 @@
+# Cherlet et al. ISPRS TLS benchmark — Robson Creek (tropical rainforest).
+source_dir: data/raw/isprs_robsoncreek
+out_dir: data/robsoncreek_isprs
+strips:
+  train: robsoncreek_train.ply
+  val: robsoncreek_val.ply
+  test: robsoncreek_test.ply
+
+voxel_m: 0.05
+tile_m: 30.0
+crop_m: 12.0
+stride_m: 6.0
+min_crop_points: 2048
+max_crop_points: 100000
+min_crop_trees: 1
+seed: 0
+
+csf: {resolution: 0.5, threshold: 0.5, iterations: 500, rigidness: 1}

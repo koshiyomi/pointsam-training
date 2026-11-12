@@ -1,6 +1,7 @@
 # Full LoRA run with Colab-safe DataLoader workers. Expect a long wall time on a T4
 # versus ~20 minutes on an ICE H100; prefer smoke_colab.yaml first.
 run: isprs_lora_colab
+adapter: lora
 data_dir: data/wytham_isprs/crops
 checkpoint: thirdparty/checkpoints/point_sam/model.safetensors
 out_dir: results/isprs_lora_colab
