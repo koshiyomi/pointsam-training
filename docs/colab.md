@@ -10,17 +10,28 @@ Use a GPU runtime (**Runtime → Change runtime type → GPU**). Free Colab is u
 
 To keep data and checkpoints across sessions, set `USE_DRIVE = True` so work lives under `MyDrive/pointsam-training`.
 
+## Speeding up new Colab VMs
+
+Colab wipes the VM each time; only Drive (and what you cache there) survives. After the first successful setup:
+
+| Keep on Drive | Effect on next VM |
+|---|---|
+| `MyDrive/pointsam-training` (repo, `thirdparty/`, `data/`) | No re-clone, no Zenodo re-download, no crop rebuild |
+| `MyDrive/pointsam-colab-cache/wheels/*.whl` | `torkit3d` installs in seconds instead of a CUDA compile |
+| `FORCE_REFRESH = False` | Skips `git fetch`/`reset` of the Drive checkout |
+
+Leave `DOWNLOAD_DATA` / `PREPARE_DATA` on; `setup_colab.py` skips them when crops already exist (`--force-data` to rebuild). Pip packages still install each VM (Colab’s site-packages is ephemeral); that is usually minutes, not tens of minutes.
+
 ## What the setup does
 
 `scripts/setup_colab.py` mirrors `scripts/slurm/install_env.sbatch`, adapted for Colab:
 
 - keeps Colab’s PyTorch (does not force the ICE `cu126` wheel)
-- clones Point-SAM at the pinned commit into `thirdparty/Point-SAM`
-- installs `requirements.txt` and builds `torkit3d` with `FORCE_CUDA=1`
-- downloads `thirdparty/checkpoints/point_sam/model.safetensors`
-- with `--download-data` / `--prepare-data`, uses `configs/data/isprs_wytham_colab.yaml` (`data/raw/isprs_wytham` → `data/wytham_isprs`)
+- clones Point-SAM at the pinned commit into `thirdparty/Point-SAM` (skipped if already checked out)
+- installs `requirements.txt` and builds or **reuses a Drive-cached** `torkit3d` wheel
+- downloads `thirdparty/checkpoints/point_sam/model.safetensors` once onto Drive
+- with `--download-data` / `--prepare-data`, uses `configs/data/isprs_wytham_colab.yaml` (`data/raw/isprs_wytham` → `data/wytham_isprs`), skipped when crops exist
 
-Re-running the script skips finished steps.
 
 ## After setup
 
